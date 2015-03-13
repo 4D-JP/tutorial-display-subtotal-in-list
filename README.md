@@ -94,13 +94,9 @@ Form1の場合，1番目の列は```[Invoice]code```つまりフィールドが�
 ```
 C_LONGINT($0)
 
-CUT NAMED SELECTION([InvoiceDetail];"$temp")
-
 LOAD RECORD([Invoice])
 RELATE MANY([Invoice]ID)
 $0:=Sum([InvoiceDetail]amount)
-
-USE NAMED SELECTION("$temp")
 ```
 
  
