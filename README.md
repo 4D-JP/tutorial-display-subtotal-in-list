@@ -100,13 +100,6 @@ LOAD RECORD([Invoice])
 RELATE MANY([Invoice]ID)
 $0:=Sum([InvoiceDetail]amount)
 
-C_POINTER($1)
-If (Count parameters#0)
- If (Not(Nil($1)))
-  $1->:=Sum([InvoiceDetail]count)
- End if 
-End if 
-
 USE NAMED SELECTION("$temp")
 ```
 
