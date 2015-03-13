@@ -41,12 +41,12 @@ For ($i;1;$invoiceCount)
 
   For ($j;1;$detailCount)
 
-  CREATE RECORD([InvoiceDetail])
-  [InvoiceDetail]invoice:=[Invoice]ID
-  [InvoiceDetail]price:=((Random%100)+1)*100
-  [InvoiceDetail]count:=(Random%9)+1
-  [InvoiceDetail]amount:=[InvoiceDetail]price*[InvoiceDetail]count
-  SAVE RECORD([InvoiceDetail])
+   CREATE RECORD([InvoiceDetail])
+   [InvoiceDetail]invoice:=[Invoice]ID
+   [InvoiceDetail]price:=((Random%100)+1)*100
+   [InvoiceDetail]count:=(Random%9)+1
+   [InvoiceDetail]amount:=[InvoiceDetail]price*[InvoiceDetail]count
+   SAVE RECORD([InvoiceDetail])
 
   End for 
 
@@ -161,3 +161,56 @@ $Total->:=INVOICE_Total
 ---
 
 サンプルの《Form2》は，リストボックスを使用しています。
+
+特別な必要がない限り，一覧画面はリストボックスで作成したほうが簡単ですが，似たような画面は旧来のリストフォームでも作成することができます。
+
+行の背景色を交互に変更するためには，```Displayed line number```を参照し，それが偶数行と奇数行を判別します。
+
+```
+$event:=Form event
+
+Case of 
+ : ($event=On Display Detail)
+
+  If (Displayed line number%2=0)
+   OBJECT SET VISIBLE(*;"BgEven";True)
+   OBJECT SET VISIBLE(*;"BgOdd";False)
+  Else 
+   OBJECT SET VISIBLE(*;"BgEven";False)
+   OBJECT SET VISIBLE(*;"BgOdd";True)
+  End if 
+
+End case 
+```
+行毎の集計は，```On Display Detail```で算定します。
+
+```
+$event:=Form event
+
+Case of 
+ : ($event=On Display Detail)
+
+  Self->:=INVOICE_Subtotal 
+
+End case 
+```
+
+* 変数オブジェクトの《変数名》に式を記述することにより，同じタイミングでメソッドなどを実行することもできます。
+
+リストフォームの各行に配置された変数は，```On Display Detail```が実行されるたびに書き換えられ，以前の値は失われることに留意してください。特定の行に表示されている集計値をOn Display Detail以外の場所で参照するためには，改めて集計メソッドを実行する必要があります。そのためには，そのレコードをカレントレコードにした上で，列のデータソースに設定されているのと同じメソッドを呼び出します。つまり，リストボックスの場合と同じ原則が適用されます。
+
+合計は，リストフォームのフッターに配置された変数に代入されています。合計は，リストが再描画されるたびに一度だけ実行すれば良いので，```On Header```で計算しています。
+
+```
+$event:=Form event
+
+Case of 
+ : ($event=On Header)
+
+  $Total:=OBJECT Get pointer(Object named;"Total")
+  $Total->:=INVOICE_Total 
+
+End case 
+```
+
+* ```On Load```と```On Header```を混同しないでください。```On Load```は，フォームが表示されたときに1度だけ発生するイベントですが，```On Header```は，リストフォームが再描画されるたびに繰り返し発生するイベントです。これには，フォームを表示したときや，セレクションが変わったときだけでなく，縦または横にリストをスクロールしたとき・ウィンドウをリサイズしたとき・ウィンドウがアクティブになったとき・非アクティブになったとき，などが含まれます。
