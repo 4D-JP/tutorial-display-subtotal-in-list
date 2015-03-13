@@ -33,24 +33,24 @@ C_LONGINT($i;$j)
 
 For ($i;1;$invoiceCount)
 
-CREATE RECORD([Invoice])
+ CREATE RECORD([Invoice])
 
-[Invoice]code:=Change string($format;String($i);Length($format)-Length(String($i))+1)
+ [Invoice]code:=Change string($format;String($i);Length($format)-Length(String($i))+1)
 
-$detailCount:=(Random%16)+1
+ $detailCount:=(Random%16)+1
 
-For ($j;1;$detailCount)
+  For ($j;1;$detailCount)
 
-CREATE RECORD([InvoiceDetail])
-[InvoiceDetail]invoice:=[Invoice]ID
-[InvoiceDetail]price:=((Random%100)+1)*100
-[InvoiceDetail]count:=(Random%9)+1
-[InvoiceDetail]amount:=[InvoiceDetail]price*[InvoiceDetail]count
-SAVE RECORD([InvoiceDetail])
+  CREATE RECORD([InvoiceDetail])
+  [InvoiceDetail]invoice:=[Invoice]ID
+  [InvoiceDetail]price:=((Random%100)+1)*100
+  [InvoiceDetail]count:=(Random%9)+1
+  [InvoiceDetail]amount:=[InvoiceDetail]price*[InvoiceDetail]count
+  SAVE RECORD([InvoiceDetail])
 
-End for 
+  End for 
 
-SAVE RECORD([Invoice])
+  SAVE RECORD([Invoice])
 
 End for 
 
@@ -79,6 +79,39 @@ Searchエリアに番号を入力すると，```[Invoice]```のセレクショ�
 リストボックスには，代表的なメカニズムが最初から揃っており，セットアップがとても簡単です。交互に使用する背景色・罫線・列幅のリサイズ・行および列のドラッグ＆ドロップ・スクロールしない列（左側に固定され横スクロールしない）・ヘッダークリックによる並び替え・フッター表示といったことは，**プログラミングをせずに**プロパティ設定だけで実現できます。
 
 サンプルの《Form1》は，リストボックスを使用しています。
+ 
+
+リストボックスのデータソースには，配列・カレントセレクション・命名セレクションのどれかを設定することができます。データソースをカレントセレクションに設定する場合，マスターテーブルを選びます。
+
+リストボックス各列には，マスターテーブルのフィールドを表示させるのが一般的ですが，実際のデータソースプロパティは《式》となっており，メソッド・関数・結合した文字列など，何であれ，値を返す式，つまりフォーミュラを記述することができます。
+
+Form1の場合，1番目の列は```[Invoice]code```つまりフィールドがデータソースですが，2番目の列は```INVOICE_Subtotal```というメソッドが設定されていることに注目してください。このメソッドは，行を表示するたびに，つまり```On Display Detail```と同じタイミングで評価されます。
+
+* リストボックスや列のオブジェクトメソッドで```On Display Detail```することもできます。
+
+メソッドは，集計値を算定するために，リレーションコマンドを実行しています。
+
+```
+C_LONGINT($0)
+
+CUT NAMED SELECTION([InvoiceDetail];"$temp")
+
+LOAD RECORD([Invoice])
+RELATE MANY([Invoice]ID)
+$0:=Sum([InvoiceDetail]amount)
+
+C_POINTER($1)
+If (Count parameters#0)
+ If (Not(Nil($1)))
+  $1->:=Sum([InvoiceDetail]count)
+ End if 
+End if 
+
+USE NAMED SELECTION("$temp")
+```
+
+ 
+ 
  
 リストフォーム
 ---
