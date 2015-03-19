@@ -5,3 +5,10 @@ Scheduled : 15/03/12 12:01:16
 Starting : 15/03/12 12:01:16
 Ending : 15/03/12 12:01:16
 
+*** Full Backup
+Creating archive : Macintosh HD:Users:miyako:github-miyako:tutorial-display-subtotal-in-list:SUPJ-11935.4dbase:SUPJ-11935[0002].4BK
+Creating log backup : Macintosh HD:Users:miyako:github-miyako:tutorial-display-subtotal-in-list:SUPJ-11935.4dbase:SUPJ-11935[0001].4BL
+Scheduled : 15/03/15 00:00:00
+Starting : 15/03/19 10:18:11
+Ending : 15/03/19 10:18:12
+
